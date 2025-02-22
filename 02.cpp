@@ -27,7 +27,43 @@ void part1() {
     println();
 }
 
+void next_key(char& curr, char dire) {
+    // clang-format off
+    static const map<pair<char, char>, char> mat{
+       {{'1', 'D'}, '3'},
+       {{'2', 'R'}, '3'}, {{'2', 'D'}, '6'},
+       {{'3', 'U'}, '1'}, {{'3', 'R'}, '4'}, {{'3', 'D'}, '7'}, {{'3', 'L'}, '2'},
+       {{'4', 'D'}, '8'}, {{'4', 'L'}, '3'},
+       {{'5', 'R'}, '6'},
+       {{'6', 'U'}, '2'}, {{'6', 'R'}, '7'}, {{'6', 'D'}, 'A'}, {{'6', 'L'}, '5'},
+       {{'7', 'U'}, '3'}, {{'7', 'R'}, '8'}, {{'7', 'D'}, 'B'}, {{'7', 'L'}, '6'},
+       {{'8', 'U'}, '4'}, {{'8', 'R'}, '9'}, {{'8', 'D'}, 'C'}, {{'8', 'L'}, '7'},
+       {{'9', 'L'}, '8'},
+       {{'A', 'U'}, '6'}, {{'A', 'R'}, 'B'},
+       {{'B', 'U'}, '7'}, {{'B', 'R'}, 'C'}, {{'B', 'D'}, 'D'}, {{'B', 'L'}, 'A'},
+       {{'C', 'U'}, '8'}, {{'C', 'L'}, 'B'},
+       {{'D', 'U'}, 'B'}
+    };
+    // clang-format on
+
+    if (mat.contains({curr, dire}))
+        curr = mat.at({curr, dire});
+}
+
+void part2() {
+    ifstream input("input/input02");
+    char curr = '5';
+    for (string line; getline(input, line);) {
+        for (auto c : line) {
+            next_key(curr, c);
+        }
+        print("{}", curr);
+    }
+    println();
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
