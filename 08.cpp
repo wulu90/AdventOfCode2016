@@ -26,7 +26,7 @@ pair<size_t, size_t> parse(const string& str) {
     return {a, b};
 }
 
-void part1() {
+void part1_2() {
     array<bool, 50> row_off;
     row_off.fill(false);
     array<array<bool, 50>, 6> screen;
@@ -79,9 +79,20 @@ void part1() {
     }
 
     println("{}", num);
+
+    for (auto& row : screen) {
+        for (auto b : row) {
+            if (b) {
+                print("#");
+            } else {
+                print(" ");
+            }
+        }
+        println();
+    }
 }
 
 int main() {
-    part1();
+    part1_2();
     return 0;
 }
