@@ -152,7 +152,32 @@ void part1() {
     println();
 }
 
+void part2() {
+    int i  = 0;
+    int ei = 0;
+    string str(8, ' ');
+    while (true) {
+        auto op = md5(format("wtnhxymk{}", i));
+        if (op[0] == byte{0} && op[1] == byte{0} && to_integer<uint8_t>(op[2]) >= 0x00 && to_integer<uint8_t>(op[2]) <= 0x07) {
+            size_t inx = to_integer<size_t>(op[2]);
+            if (str[inx] == ' ') {
+                uint8_t hash3 = to_integer<uint8_t>(op[3]);
+                uint8_t tmp   = hash3 >> 4;
+                str[inx]      = tmp <= 9 ? '0' + tmp : 'a' + tmp - 10;
+
+                ++ei;
+                if (ei == 8) {
+                    break;
+                }
+            }
+        }
+        ++i;
+    }
+    println("{}", str);
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
