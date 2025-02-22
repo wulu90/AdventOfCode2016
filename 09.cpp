@@ -41,7 +41,55 @@ void part1() {
     println("{}", num);
 }
 
+uint64_t decompress_len(string str) {
+    uint64_t len = 0;
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (str[i] != '(') {
+            ++len;
+        } else {
+            uint64_t a, b;
+            uint64_t n = 0;
+            ++i;
+            while (isdigit(str[i])) {
+                n = n * 10 + str[i] - '0';
+                ++i;
+            }
+            a = n;
+            n = 0;
+            ++i;
+            while (isdigit(str[i])) {
+                n = n * 10 + str[i] - '0';
+                ++i;
+            }
+            b = n;
+
+            ++i;
+            string tmp;
+            tmp.reserve(a);
+            size_t j = a;
+            while (j > 0) {
+                if (!isspace(str[i])) {
+                    tmp.push_back(str[i]);
+                    --j;
+                }
+                ++i;
+            }
+            --i;
+            len += b * decompress_len(tmp);
+        }
+    }
+    return len;
+}
+
+void part2() {
+    ifstream input("input/input09");
+    string line;
+    getline(input, line);
+    println("{}", decompress_len(line));
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
