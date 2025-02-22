@@ -43,9 +43,10 @@ void part1() {
 
 uint64_t decompress_len(string str) {
     uint64_t len = 0;
-    for (size_t i = 0; i < str.size(); ++i) {
+    for (size_t i = 0; i < str.size();) {
         if (str[i] != '(') {
             ++len;
+            ++i;
         } else {
             uint64_t a, b;
             uint64_t n = 0;
@@ -74,7 +75,6 @@ uint64_t decompress_len(string str) {
                 }
                 ++i;
             }
-            --i;
             len += b * decompress_len(tmp);
         }
     }
