@@ -1,5 +1,6 @@
 #include <fstream>
 #include <print>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -37,18 +38,60 @@ bool ipv7_tls(const string& str) {
     }
 }
 
-void part1() {
-    ifstream input("input/input07");
-    uint count = 0;
-    for (string line; getline(input, line);) {
-        if (ipv7_tls(line)) {
-            ++count;
+bool ipv7_ssl(const string& str) {
+    set<string> aba_sets;
+    set<string> bab_sets;
+
+    bool in_square = false;
+    for (size_t i = 0; i < str.size() - 2; ++i) {
+        if (str[i] == '[') {
+            in_square = true;
+        }
+
+        if (str[i] == ']') {
+            in_square = false;
+        }
+
+        if (str[i] == str[i + 2] && str[i] != str[i + 1]) {
+            if (in_square) {
+                bab_sets.insert({str.begin() + i, str.begin() + i + 3});
+            } else {
+                aba_sets.insert({str.begin() + i, str.begin() + i + 3});
+            }
         }
     }
-    println("{}", count);
+
+    if (aba_sets.empty() || bab_sets.empty()) {
+        return false;
+    } else {
+        for (auto aba : aba_sets) {
+            string bab{aba[1], aba[0], aba[1]};
+            if (bab_sets.contains(bab)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+void part1_2() {
+    ifstream input("input/input07");
+    uint tls_count = 0;
+    uint ssl_count = 0;
+    for (string line; getline(input, line);) {
+        if (ipv7_tls(line)) {
+            ++tls_count;
+        }
+        if (ipv7_ssl(line)) {
+            ++ssl_count;
+        }
+    }
+    println("{}", tls_count);
+    println("{}", ssl_count);
 }
 
 int main() {
-    part1();
+    part1_2();
     return 0;
 }
