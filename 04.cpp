@@ -53,7 +53,31 @@ void part1() {
     println("{}", sum);
 }
 
+string decrypt(const room& r) {
+    string str;
+    for (auto c : r.name) {
+        if (c != '-') {
+            str.push_back((c - 96 + r.id) % 26 + 96);
+        } else {
+            str.push_back(' ');
+        }
+    }
+    return str;
+}
+
+void part2() {
+    ifstream input("input/input04");
+    for (string line; getline(input, line);) {
+        auto r = parse(line);
+        if (decrypt(r).contains("northpole")) {
+            println("{}", r.id);
+            break;
+        }
+    }
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
