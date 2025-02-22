@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void part1() {
+void part1_2() {
     ifstream input("input/input06");
     string line;
     getline(input, line);
@@ -33,9 +33,23 @@ void part1() {
     }
 
     println();
+
+    for (auto& char_count : col_char_count) {
+        char c;
+        uint mincount = UINT32_MAX;
+        for (auto [ch, n] : char_count) {
+            if (n < mincount) {
+                mincount = n;
+                c        = ch;
+            }
+        }
+        print("{}", c);
+    }
+
+    println();
 }
 
 int main() {
-    part1();
+    part1_2();
     return 0;
 }
