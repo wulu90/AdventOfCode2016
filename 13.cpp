@@ -67,7 +67,30 @@ void part1() {
     }
 }
 
+void part2() {
+    set<pair<int64_t, int64_t>> curr{{1, 1}};
+    set<pair<int64_t, int64_t>> all{{1, 1}};
+    for (int i = 0; i < 50; ++i) {
+        set<pair<int64_t, int64_t>> tmpset;
+
+        for (auto coord : curr) {
+            for (auto nextcoord : next_coord(coord)) {
+                tmpset.insert(nextcoord);
+            }
+        }
+
+        for (auto coord : tmpset) {
+            all.insert(coord);
+        }
+
+        curr = std::move(tmpset);
+    }
+
+    println("{}", all.size());
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
