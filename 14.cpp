@@ -1,6 +1,7 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
+#include <map>
 #include <print>
 #include <string>
 
@@ -191,7 +192,65 @@ void part1() {
     }
 }
 
+string hash_bytes_to_str_2(const array<byte, 16>& hb) {
+    string str(32, ' ');
+    static const string hexstr = "0123456789abcdef";
+    for (size_t i = 0; i < 16; ++i) {
+        auto tmp       = to_integer<uint8_t>(hb[i]);
+        str[i * 2]     = hexstr[(tmp & 0xf0) >> 4];
+        str[i * 2 + 1] = hexstr[tmp & 0x0f];
+    }
+    return str;
+}
+
+string hash2016(const string& str) {
+    auto hash = hash_bytes_to_str_2(md5(str));
+    for (int i = 0; i < 2016; ++i) {
+        hash = hash_bytes_to_str_2(md5(hash));
+    }
+    return hash;
+}
+
+string inx_hash(int i) {
+    static map<int, string> hash_map;
+    string str;
+    if (!hash_map.contains(i)) {
+        str = hash2016(format("jlmsuwbz{}", i));
+        hash_map.insert({i, str});
+    } else {
+        str = hash_map[i];
+    }
+    return str;
+}
+
+void part2() {
+    int i    = 0;
+    int ii64 = 0;
+    map<int, string> hash_map;
+    while (true) {
+        string str1 = inx_hash(i);
+
+        auto pos = triple(str1);
+        if (pos != string::npos) {
+            for (int n = i + 1; n < i + 1001; ++n) {
+                auto str2 = inx_hash(n);
+                if (fivekind(str2, str1[pos])) {
+                    ++ii64;
+                    break;
+                }
+            }
+        }
+
+        if (ii64 == 64) {
+            println("{}", i);
+            break;
+        }
+        ++i;
+    }
+}
+
 int main() {
-    part1();
+    // part1();
+    part2();
     return 0;
 }
