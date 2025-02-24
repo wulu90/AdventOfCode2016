@@ -138,12 +138,66 @@ array<byte, 16> md5(const string& str) {
     return op;
 }
 
+array<byte, 16> md5_l(const string& str) {
+    array<byte, 64> padding;
+    padding.fill(byte{0});
+    padding[0] = byte{0x80};
+
+    array<uint32_t, 4> state{0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476};
+
+    array<byte, 64> block;
+
+    uint bytes_num = str.size();
+    uint inx       = 0;
+    while (bytes_num >= 64) {
+        memcpy(block.data(), str.data() + inx * 64, 64);
+        MD5Transform(state, block);
+        bytes_num -= 64;
+        ++inx;
+    }
+
+    if (bytes_num >= 56) {
+        memcpy(block.data(), str.data() + inx * 64, bytes_num);
+        memcpy(block.data() + bytes_num, padding.data(), 64 - bytes_num);
+        MD5Transform(state, block);
+
+        memcpy(block.data(), padding.data() + 1, 56);
+        uint64_t len = str.size() * 8;
+        memcpy(block.data() + 56, &len, 8);
+        MD5Transform(state, block);
+
+        bytes_num = 0;
+
+    } else {
+        memcpy(block.data(), str.data() + inx * 64, bytes_num);
+        memcpy(block.data() + bytes_num, padding.data(), 56 - bytes_num);
+        uint64_t len = str.size() * 8;
+        memcpy(block.data() + 56, &len, 8);
+        MD5Transform(state, block);
+    }
+
+    array<byte, 16> op;
+    memcpy(op.data(), state.data(), 16);
+
+    return op;
+}
+
+void test_md5_l() {
+    string aa{"ajsdfoasndgafgoadgnysdlfagnadflgmadfjoasdfnasdlfnasdofansdfantlanrslnfsaodfnasdofnaosdfnasodfasfnasodntanflas1234567890abc"};
+    auto op = md5_l(aa);
+    string str;
+    for (auto b : op) {
+        format_to(back_inserter(str), "{:02x}", to_integer<uint8_t>(b));
+    }
+    println("{}", str);
+}
+
 vector<tuple<char, int, int>> next_coord(const string& path, const pair<int, int> coord) {
     static const array<array<int, 2>, 4> deltas{{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}};
     static const string input{"bwnlcvfs"};
     static const string hexchars{"0123456789abcdef"};
     static const string dirs{"UDLR"};
-    auto hashbytes = md5(input + path);
+    auto hashbytes = md5_l(input + path);
     string doorstr{hexchars[(to_integer<uint8_t>(hashbytes[0]) & 0xf0) >> 4], hexchars[to_integer<uint8_t>(hashbytes[0]) & 0x0f],
                    hexchars[(to_integer<uint8_t>(hashbytes[1]) & 0xf0) >> 4], hexchars[to_integer<uint8_t>(hashbytes[1]) & 0x0f]};
 
@@ -190,7 +244,35 @@ void part1() {
     }
 }
 
+void part2() {
+    using node = tuple<uint, string, int, int>;    // step num,path string,row,col;
+    queue<node> q;
+    q.push({0, {}, 0, 0});
+
+    uint longest = 0;
+    while (!q.empty()) {
+        auto n = q.size();
+
+        for (size_t i = 0; i < n; ++i) {
+            auto [step, path, row, col] = q.front();
+            if (row == 3 && col == 3) {
+                longest = max(longest, step);
+                q.pop();
+                continue;
+            }
+
+            for (auto [ch, r, c] : next_coord(path, {row, col})) {
+                q.push({step + 1, path + ch, r, c});
+            }
+            q.pop();
+        }
+    }
+    println("{}", longest);
+}
+
 int main() {
     part1();
+    part2();
+    test_md5_l();
     return 0;
 }
