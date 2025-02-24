@@ -35,7 +35,24 @@ void part1() {
     println("{}", safe_tiles);
 }
 
+void part2() {
+    ifstream input("input/input18");
+    string line;
+    getline(input, line);
+
+    auto safe_tiles = count_if(line.begin(), line.end(), [](auto& c) { return c == '.'; });
+    for (int i = 0; i < (400000 - 1); ++i) {
+        line     = '.' + line + '.';
+        auto row = next_row(line);
+        safe_tiles += count_if(row.begin(), row.end(), [](auto& c) { return c == '.'; });
+        line = std::move(row);
+    }
+
+    println("{}", safe_tiles);
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
