@@ -79,7 +79,43 @@ void part1() {
     println("{}", str);
 }
 
+void part2() {
+    ifstream input("input/input21");
+    string str{"abcdefgh"};
+    vector<string> scrambler_vec;
+    for (string line; getline(input, line);) {
+        scrambler_vec.push_back(line);
+    }
+
+    do {
+        auto tmp = str;
+        for (auto& line : scrambler_vec) {
+            if (line.starts_with("swap po")) {
+                swap_position(str, line[14] - '0', line.back() - '0');
+            } else if (line.starts_with("swap le")) {
+                swap_letter(str, line[12], line[26]);
+            } else if (line.starts_with("rotate left")) {
+                rotate_steps(str, true, line[12] - '0');
+            } else if (line.starts_with("rotate right")) {
+                rotate_steps(str, false, line[13] - '0');
+            } else if (line.starts_with("rotate based")) {
+                rotate_letter(str, line.back());
+            } else if (line.starts_with("reverse")) {
+                reverse_pos(str, line[18] - '0', line.back() - '0');
+            } else {    // move position
+                move_pos(str, line[14] - '0', line.back() - '0');
+            }
+        }
+
+        if (str == "fbgdceah") {
+            println("{}", tmp);
+            break;
+        }
+    } while (next_permutation(str.begin(), str.end()));
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
