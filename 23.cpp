@@ -5,11 +5,16 @@
 
 using namespace std;
 
-void run(array<int, 5> regs, const vector<string>& ins_vec) {
+void run(array<int, 5> regs, vector<string>& ins_vec) {
     size_t index = 0;
     while (index < ins_vec.size()) {
         auto& ins = ins_vec[index];
         if (ins.starts_with("cpy")) {
+            if (!isalpha(ins.back())) {
+                ++index;
+                continue;
+            }
+
             if (isalpha(ins[4])) {
                 regs[ins.back() - 'a'] = regs[ins[4] - 'a'];
             } else {
@@ -46,26 +51,45 @@ void run(array<int, 5> regs, const vector<string>& ins_vec) {
             } else {
                 ++index;
             }
+        } else if (ins.starts_with("tgl")) {
+            int awaystep = 0;
+            if (isalpha(ins[4])) {
+                awaystep = regs[ins[4] - 'a'];
+            } else {
+                auto p = ins.rfind(' ');
+                from_chars(ins.data() + p + 1, ins.data() + ins.size(), awaystep);
+            }
+            if (index + awaystep < ins_vec.size()) {
+                auto& awayins = ins_vec[index + awaystep];
+                if (awayins.starts_with("inc")) {
+                    awayins.replace(0, 3, "dec");
+                } else if (awayins.starts_with("dec") || awayins.starts_with("tgl")) {
+                    awayins.replace(0, 3, "inc");
+                } else if (awayins.starts_with("jnz")) {
+                    awayins.replace(0, 3, "cpy");
+                } else if (awayins.starts_with("cpy")) {
+                    awayins.replace(0, 3, "jnz");
+                }
+            }
+            ++index;
         }
     }
 
     println("{}", regs[0]);
 }
 
-void part1_2() {
-    ifstream input("input/input12");
+void part1() {
+    ifstream input("input/input23");
     vector<string> ins_vec;
     for (string line; getline(input, line);) {
         ins_vec.push_back(line);
     }
 
-    array<int, 5> regs{0, 0, 0, 0, 0};
-    run(regs, ins_vec);
-    regs = {0, 0, 1, 0, 0};
+    array<int, 5> regs{7, 0, 0, 0, 0};
     run(regs, ins_vec);
 }
 
 int main() {
-    part1_2();
+    part1();
     return 0;
 }
