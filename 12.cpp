@@ -5,15 +5,7 @@
 
 using namespace std;
 
-void part1() {
-    ifstream input("input/input12");
-    vector<string> ins_vec;
-    for (string line; getline(input, line);) {
-        ins_vec.push_back(line);
-    }
-
-    array<int, 5> regs{0, 0, 0, 0, 0};
-
+void run(array<int, 5> regs, const vector<string>& ins_vec) {
     size_t index = 0;
     while (index < ins_vec.size()) {
         auto& ins = ins_vec[index];
@@ -54,6 +46,19 @@ void part1() {
     }
 
     println("{}", regs[0]);
+}
+
+void part1() {
+    ifstream input("input/input12");
+    vector<string> ins_vec;
+    for (string line; getline(input, line);) {
+        ins_vec.push_back(line);
+    }
+
+    array<int, 5> regs{0, 0, 0, 0, 0};
+    run(regs, ins_vec);
+    regs = {0, 0, 1, 0, 0};
+    run(regs, ins_vec);
 }
 
 int main() {
