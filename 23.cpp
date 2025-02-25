@@ -78,18 +78,21 @@ void run(array<int, 5> regs, vector<string>& ins_vec) {
     println("{}", regs[0]);
 }
 
-void part1() {
+void part1_2() {
     ifstream input("input/input23");
     vector<string> ins_vec;
     for (string line; getline(input, line);) {
         ins_vec.push_back(line);
     }
 
+    auto ins_vec_ori = ins_vec;
     array<int, 5> regs{7, 0, 0, 0, 0};
     run(regs, ins_vec);
+    regs = {12, 0, 0, 0, 0};
+    run(regs, ins_vec_ori);
 }
 
 int main() {
-    part1();
+    part1_2();
     return 0;
 }
