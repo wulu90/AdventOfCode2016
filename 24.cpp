@@ -36,7 +36,7 @@ uint32_t interest_to_interest_shortest(const vector<string>& inputmap, char i0, 
             for (auto [dr, dc] : deltas) {
                 auto r = curr.first + dr;
                 auto c = curr.second + dc;
-                if (r < row_count && c < col_count && !visited.contains({r, c}) && (inputmap[r][c] == '.' || isdigit(inputmap[r][c]))) {
+                if (r < row_count && c < col_count && !visited.contains({r, c}) && inputmap[r][c] != '#') {
                     q.push({r, c});
                     visited.insert({r, c});
                 }
@@ -110,6 +110,58 @@ void part1() {
 
         visited.insert(curr);
     }
+
+    while (!pq.empty()) {
+        pq.pop();
+    }
+    pq.push({0, '0', {'0'}});
+    visited.clear();
+
+    map<char, uint32_t> non_zero_steps;
+
+    while (!pq.empty()) {
+        auto curr = pq.top();
+        pq.pop();
+
+        if (visited.contains(curr)) {
+            continue;
+        }
+
+        auto [step, ch, path] = curr;
+        if (path.size() == interests.size()) {    // all interest point visite at least once
+
+            if (non_zero_steps.contains(ch)) {
+                non_zero_steps[ch] = min(non_zero_steps[ch], step);
+            } else {
+                non_zero_steps[ch] = step;
+            }
+
+            if (non_zero_steps.size() == interests.size() - 1) {
+                break;
+            }
+        }
+
+        for (auto c : interests) {
+            if (ch == c || c == '0') {
+                continue;
+            }
+
+            if (ii_dists.contains({ch, c})) {
+                auto tmp_path = path;
+                tmp_path.insert(c);
+                pq.push({step + ii_dists[{ch, c}], c, tmp_path});
+            }
+        }
+
+        visited.insert(curr);
+    }
+
+    uint32_t min_non_zero = UINT32_MAX;
+    for (auto [c, step] : non_zero_steps) {
+        min_non_zero = min(min_non_zero, step + ii_dists[{c, '0'}]);
+    }
+
+    println("{}", min_non_zero);
 }
 
 int main() {
